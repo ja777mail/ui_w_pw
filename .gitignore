@@ -15,10 +15,20 @@ node_modules/
 # Игнорировать файлы настроек IDE
 .vscode/
 
-# .env files
-.gitignore
-.env.local
-.env.*.local
+# VS Code
+.vscode/
+.history/
+*.code-workspace
 
-.DS_Store
+# Env files
 .env
+.env.test
+.env.local
+
+# macOS system files
+.DS_Store
+
+# others
+.github/
+keys.txt
+
