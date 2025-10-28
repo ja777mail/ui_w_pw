@@ -14,3 +14,7 @@ node_modules/
 
 # Игнорировать файлы настроек IDE
 .vscode/
+
+# .env files
+.gitignore
+.env
