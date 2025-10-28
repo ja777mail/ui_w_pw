@@ -90,3 +90,13 @@ jobs:
           echo "✅ Report successfully deployed!"
           echo "🔗 Open it here:"
           echo "👉 https://${REPO_NAME%%/*}.github.io/${REPO_NAME#*/}/"
+
+      - name: 💬 Comment report link on PR or commit
+        if: success()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: "🧪 Playwright Test Report"
+          message: |
+            ✅ **Playwright report deployed!**
+
+            🔗 [Open Report](${{ env.REPORT_URL }})L
