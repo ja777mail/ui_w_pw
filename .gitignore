@@ -17,4 +17,8 @@ node_modules/
 
 # .env files
 .gitignore
+.env.local
+.env.*.local
+
+.DS_Store
 .env
