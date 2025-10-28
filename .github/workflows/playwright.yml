@@ -35,12 +35,12 @@ jobs:
           set -e
 
       # === 1️⃣ Сохраняем отчёт как артефакт ===
-      - name: 📁 Upload Playwright HTML Report as artifact
+      - name: 📁 Upload Playwright HTML Report
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report
-          retention-days: 7
+          retention-days: 3
 
       # === 2️⃣ Создаём dashboard (корневую страницу) ===
       - name: 🪄 Create Dashboard index.html
