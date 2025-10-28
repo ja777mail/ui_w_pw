@@ -1,8 +1,16 @@
 
-# Playwright
-node_modules/
+# Игнорировать Playwright
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Игнорировать все файлы с расширением .log
+*.log
+
+# Игнорировать Node
+node_modules/
+
+# Игнорировать файлы настроек IDE
+.vscode/
