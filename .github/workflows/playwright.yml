@@ -29,7 +29,10 @@ jobs:
       - name: 🧪 Run Playwright tests
         id: run-tests
         run: |
-          npx playwright test --reporter=html || echo "TESTS_FAILED=true" >> $GITHUB_ENV
+          set +e
+          npx playwright test --reporter=html
+          echo "TESTS_EXIT_CODE=$?" >> $GITHUB_ENV
+          set -e
 
       # === 1️⃣ Сохраняем отчёт как артефакт ===
       - name: 📁 Upload Playwright HTML Report as artifact
@@ -39,22 +42,15 @@ jobs:
           path: playwright-report
           retention-days: 7
 
-      # === 2️⃣ Исправляем base href для корректных ссылок ===
-      - name: 🛠 Fix report base path for GitHub Pages
+      # === 2️⃣ Создаём dashboard (корневую страницу) ===
+      - name: 🪄 Create Dashboard index.html
         run: |
+          mkdir -p site
           REPO="${{ github.repository }}"
-          BASE_PATH="${REPO#*/}"
-          sed -i "s|<head>|<head><base href='/${BASE_PATH}/playwright-report/'>|" playwright-report/index.html
-
-      # === 3️⃣ Создаём dashboard c реальным статусом ===
-      - name: 🪄 Create root index.html for Pages
-        run: |
-          mkdir -p root-page
-          REPO="${{ github.repository }}"
-          REPORT_URL="https://${REPO%%/*}.github.io/${REPO#*/}/playwright-report/"
+          REPORT_URL="https://${REPO%%/*}.github.io/${REPO#*/}/report/"
           LAST_RUN="$(date -u +"%Y-%m-%d %H:%M UTC")"
 
-          if [ "${TESTS_FAILED}" = "true" ]; then
+          if [ "${TESTS_EXIT_CODE}" != "0" ]; then
             STATUS="❌ Failed"
             COLOR="#dc3545"
           else
@@ -62,7 +58,7 @@ jobs:
             COLOR="#28a745"
           fi
 
-          cat > root-page/index.html <<EOF
+          cat > site/index.html <<EOF
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -82,58 +78,38 @@ jobs:
             <h1>🚀 Playwright Tests</h1>
             <p><strong>Status:</strong> ${STATUS}</p>
             <p><strong>Last run:</strong> ${LAST_RUN}</p>
-            <a href="${REPORT_URL}">View Full HTML Report</a>
+            <a href="./report/">View Full HTML Report</a>
             <footer>📦 Repo: ${REPO}</footer>
           </body>
           </html>
           EOF
 
-      # === 4️⃣ Деплой отчёта и дашборда ===
-      - name: 🚀 Prepare combined GitHub Pages content
-        if: success()
+      # === 3️⃣ Переносим HTML-отчёт в подпапку ===
+      - name: 📂 Move Playwright report into site/report
         run: |
-          mkdir -p root-page
-          # Копируем корневой index.html (дашборд)
-          cp index.html root-page/ || true
-          # Копируем Playwright отчёт в подпапку report/
-          cp -r playwright-report root-page/report || true
-          echo "✅ Combined dashboard + Playwright report ready in root-page/"
+          mkdir -p site/report
+          cp -r playwright-report/* site/report/
 
-      - name: 🚀 Deploy dashboard and report to GitHub Pages
+      # === 4️⃣ Деплой на GitHub Pages ===
+      - name: 🚀 Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: root-page
+          publish_dir: site
           force_orphan: true
           commit_message: "Deploy Playwright Dashboard + Report 🚀"
 
-      # === 5️⃣ Удаляем старые workflow-артефакты (оставляем последние 5) ===
+      # === 5️⃣ Удаляем старые workflow-артефакты ===
       - name: 🧹 Clean up old workflow artifacts
-        uses: geekyeggo/delete-artifact@v5
+        uses: actions/delete-artifact@v4
         with:
-          age: "7 days"
-          skip-tags: true
-          keep-oldest: 5
-          fail-on-error: false
+          name: playwright-report
+          failOnError: false
 
-      # === 6️⃣ Подготавливаем URL ===
-      - name: 🌐 Prepare report URL
+      # === 6️⃣ Печатаем итоговый URL ===
+      - name: 🌐 Print report URL
         run: |
           REPO="${{ github.repository }}"
           REPORT_URL="https://${REPO%%/*}.github.io/${REPO#*/}/"
-          echo "REPORT_URL=$REPORT_URL" >> $GITHUB_ENV
           echo "✅ Report available at: $REPORT_URL"
-
-      # === 7️⃣ Комментарий в PR ===
-      - name: 💬 Post or update comment on PR
-        if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: "🧪 Playwright Test Report"
-          message: |
-            **Playwright tests finished!**
-            - Status: ${{ env.STATUS }}
-            - 🔗 [View the latest HTML report here](${{ env.REPORT_URL }})
-
-            _This comment updates automatically on each workflow run._
