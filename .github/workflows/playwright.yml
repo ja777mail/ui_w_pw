@@ -96,7 +96,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: root-page
+          publish_dir: site
           force_orphan: true
           commit_message: "Deploy Playwright Dashboard + Report 🚀"
 
@@ -126,4 +126,4 @@ jobs:
           REPO="${{ github.repository }}"
           REPORT_URL="https://${REPO%%/*}.github.io/${REPO#*/}/"
           echo "REPORT_URL=$REPORT_URL" >> $GITHUB_ENV
-          echo "✅Report available at: $REPORT_URL"
+          echo "✅ Report available at: $REPORT_URL"
