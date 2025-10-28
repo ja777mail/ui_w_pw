@@ -90,13 +90,13 @@ jobs:
           mkdir -p site/report
           cp -r playwright-report/* site/report/
 
-      # === 4️⃣ Деплой на GitHub Pages ===
-      - name: 🚀 Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v5
+      # === 4️⃣ Деплой отчёта и дашборда ===
+      - name: 🚀 Deploy dashboard and report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4 # ✅ v4 — последняя стабильная версия
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: site
+          publish_dir: root-page
           force_orphan: true
           commit_message: "Deploy Playwright Dashboard + Report 🚀"
 
@@ -120,16 +120,10 @@ jobs:
           echo "❌ Page did not become available in time: $PAGE_URL"
           exit 1
 
-      # === 6️⃣ Удаляем старые workflow-артефакты ===
-      - name: 🧹 Clean up old workflow artifacts
-        uses: actions/delete-artifact@v5
-        with:
-          name: playwright-report
-          failOnError: false
-
-      # === 7️⃣ Печатаем итоговый URL ===
-      - name: 🌐 Print report URL
+      # === 6️⃣ Подготавливаем URL ===
+      - name: 🌐 Prepare report URL
         run: |
           REPO="${{ github.repository }}"
           REPORT_URL="https://${REPO%%/*}.github.io/${REPO#*/}/"
+          echo "REPORT_URL=$REPORT_URL" >> $GITHUB_ENV
           echo "✅ Report available at: $REPORT_URL"
