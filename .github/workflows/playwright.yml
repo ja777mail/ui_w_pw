@@ -81,3 +81,12 @@ jobs:
           publish_branch: gh-pages
           force_orphan: true
           commit_message: "Deploy Playwright HTML Report 🚀"
+
+      - name: 🌐 Show deployed report URL
+        if: success()
+        run: |
+          REPO_NAME="${{ github.repository }}"
+          echo ""
+          echo "✅ Report successfully deployed!"
+          echo "🔗 Open it here:"
+          echo "👉 https://${REPO_NAME%%/*}.github.io/${REPO_NAME#*/}/"
