@@ -29,6 +29,41 @@ jobs:
       - name: 🧪 Run Playwright tests
         run: npx playwright test --reporter=html
 
+      - name: 🧾 Generate summary index.html
+        if: always()
+        run: |
+          STATUS="❌ Failed"
+          COLOR="failed"
+          if [ "${{ job.status }}" == "success" ]; then
+            STATUS="✅ Passed"
+            COLOR="passed"
+          fi
+
+          DATE=$(date -u +"%Y-%m-%d %H:%M UTC")
+          mkdir -p playwright-report
+          cat <<EOF > playwright-report/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Playwright Test Report</title>
+            <style>
+              body { font-family: system-ui, sans-serif; text-align: center; margin-top: 80px; }
+              .status { font-size: 1.5rem; margin-top: 10px; }
+              .passed { color: green; }
+              .failed { color: red; }
+            </style>
+          </head>
+          <body>
+            <h1>🚀 Playwright Tests</h1>
+            <p>Last run: <b>${DATE}</b></p>
+            <p class="status ${COLOR}">${STATUS}</p>
+            <a href="./index.html" target="_blank">View full report</a>
+          </body>
+          </html>
+          EOF
+
       - name: 📂 Upload Playwright HTML Report
         if: always() # даже если тесты упали
         uses: actions/upload-artifact@v4
