@@ -126,4 +126,4 @@ jobs:
           REPO="${{ github.repository }}"
           REPORT_URL="https://${REPO%%/*}.github.io/${REPO#*/}/"
           echo "REPORT_URL=$REPORT_URL" >> $GITHUB_ENV
-          echo "✅ Report available at: $REPORT_URL"
+          echo "✅Report available at: $REPORT_URL"
