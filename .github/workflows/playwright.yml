@@ -27,11 +27,12 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: 🧪 Run Playwright tests
-        run: npx playwright test --reporter=html
+        id: run-tests
+        run: |
+          npx playwright test --reporter=html || echo "TESTS_FAILED=true" >> $GITHUB_ENV
 
       # === 1️⃣ Сохраняем отчёт как артефакт ===
       - name: 📁 Upload Playwright HTML Report as artifact
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
@@ -40,20 +41,27 @@ jobs:
 
       # === 2️⃣ Исправляем base href для корректных ссылок ===
       - name: 🛠 Fix report base path for GitHub Pages
-        if: success()
         run: |
           REPO="${{ github.repository }}"
           BASE_PATH="${REPO#*/}"
           sed -i "s|<head>|<head><base href='/${BASE_PATH}/playwright-report/'>|" playwright-report/index.html
 
-      # === 3️⃣ Создаём корневую страницу index.html с динамическим временем ===
+      # === 3️⃣ Создаём dashboard c реальным статусом ===
       - name: 🪄 Create root index.html for Pages
-        if: success()
         run: |
           mkdir -p root-page
           REPO="${{ github.repository }}"
           REPORT_URL="https://${REPO%%/*}.github.io/${REPO#*/}/playwright-report/"
           LAST_RUN="$(date -u +"%Y-%m-%d %H:%M UTC")"
+
+          if [ "${TESTS_FAILED}" = "true" ]; then
+            STATUS="❌ Failed"
+            COLOR="#dc3545"
+          else
+            STATUS="✅ Passed"
+            COLOR="#28a745"
+          fi
+
           cat > root-page/index.html <<EOF
           <!DOCTYPE html>
           <html lang="en">
@@ -65,14 +73,14 @@ jobs:
               body { font-family: system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f6f8fa; color: #24292f; }
               h1 { font-size: 2rem; margin-bottom: 0.5rem; }
               p { font-size: 1rem; margin: 0.3rem 0; }
-              a { display: inline-block; margin-top: 20px; padding: 12px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; }
-              a:hover { background: #2ea44f; }
+              a { display: inline-block; margin-top: 20px; padding: 12px 20px; background: ${COLOR}; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; }
+              a:hover { opacity: 0.9; }
               footer { margin-top: 2rem; font-size: 0.85rem; color: #6a737d; }
             </style>
           </head>
           <body>
             <h1>🚀 Playwright Tests</h1>
-            <p><strong>Status:</strong> ✅ Passed</p>
+            <p><strong>Status:</strong> ${STATUS}</p>
             <p><strong>Last run:</strong> ${LAST_RUN}</p>
             <a href="${REPORT_URL}">View Full HTML Report</a>
             <footer>📦 Repo: ${REPO}</footer>
@@ -80,46 +88,43 @@ jobs:
           </html>
           EOF
 
-      # === 4️⃣ Деплой на GitHub Pages ===
-      - name: 🚀 Deploy root page and report to GitHub Pages
-        if: success()
+      # === 4️⃣ Деплой отчёта и дашборда ===
+      - name: 🚀 Deploy dashboard and report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: root-page
-          keep_files: true
-          force_orphan: false
-          commit_message: "Deploy root page"
-      - name: 📄 Upload Playwright HTML report folder
-        if: success()
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: playwright-report
-          destination_dir: playwright-report
-          keep_files: true
-          commit_message: "Deploy Playwright HTML Report 🚀"
+          publish_dir: .
+          keep_files: false
+          force_orphan: true
+          commit_message: "Deploy Playwright Report (${STATUS})"
 
-      # === 5️⃣ Генерация ссылки ===
+      # === 5️⃣ Удаляем старые workflow-артефакты (оставляем последние 5) ===
+      - name: 🧹 Clean up old workflow artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          age: "7 days"
+          skip-tags: true
+          keep-oldest: 5
+          fail-on-error: false
+
+      # === 6️⃣ Подготавливаем URL ===
       - name: 🌐 Prepare report URL
-        if: success()
         run: |
           REPO="${{ github.repository }}"
           REPORT_URL="https://${REPO%%/*}.github.io/${REPO#*/}/"
           echo "REPORT_URL=$REPORT_URL" >> $GITHUB_ENV
           echo "✅ Report available at: $REPORT_URL"
 
-      # === 6️⃣ Комментарий в PR ===
+      # === 7️⃣ Комментарий в PR ===
       - name: 💬 Post or update comment on PR
-        if: success() && github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: "🧪 Playwright Test Report"
           message: |
-            ✅ **Playwright tests completed successfully!**
-            🔗 [Open the latest HTML report here](${{ env.REPORT_URL }})
+            **Playwright tests finished!**
+            - Status: ${{ env.STATUS }}
+            - 🔗 [View the latest HTML report here](${{ env.REPORT_URL }})
 
-            📦 You can also download the full HTML report as an artifact from the “Actions” tab.
             _This comment updates automatically on each workflow run._
