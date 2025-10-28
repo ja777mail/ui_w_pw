@@ -89,6 +89,16 @@ jobs:
           EOF
 
       # === 4️⃣ Деплой отчёта и дашборда ===
+      - name: 🚀 Prepare combined GitHub Pages content
+        if: success()
+        run: |
+          mkdir -p root-page
+          # Копируем корневой index.html (дашборд)
+          cp index.html root-page/ || true
+          # Копируем Playwright отчёт в подпапку report/
+          cp -r playwright-report root-page/report || true
+          echo "✅ Combined dashboard + Playwright report ready in root-page/"
+
       - name: 🚀 Deploy dashboard and report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -96,7 +106,7 @@ jobs:
           publish_branch: gh-pages
           publish_dir: root-page
           force_orphan: true
-          commit_message: "Deploy Playwright Report 🚀"
+          commit_message: "Deploy Playwright Dashboard + Report 🚀"
 
       # === 5️⃣ Удаляем старые workflow-артефакты (оставляем последние 5) ===
       - name: 🧹 Clean up old workflow artifacts
