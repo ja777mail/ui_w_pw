@@ -90,30 +90,31 @@ jobs:
           mkdir -p site/report
           cp -r playwright-report/* site/report/
 
-      # === 4️⃣ Деплой отчёта и дашборда ===
+            # === 4️⃣ Деплой отчёта и дашборда ===
       - name: 🚀 Deploy dashboard and report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4 # ✅ v4 — последняя стабильная версия
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: site
+          publish_dir: site # ✅ правильная директория
           force_orphan: true
           commit_message: "Deploy Playwright Dashboard + Report 🚀"
 
-      # === 5️⃣ Проверяем доступность опубликованной страницы ===
-      - name: ✅ Verify GitHub Pages deployment
+      # === 5️⃣ Проверяем доступность опубликованной страницы с ожиданием ===
+      - name: ✅ Verify GitHub Pages deployment (with wait)
         run: |
           REPO="${{ github.repository }}"
           PAGE_URL="https://${REPO%%/*}.github.io/${REPO#*/}/"
           echo "🔍 Checking availability of $PAGE_URL ..."
 
-          for i in {1..10}; do
+          # ждём максимум 5 минут (30 попыток по 10 сек)
+          for i in {1..30}; do
             STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$PAGE_URL" || true)
             if [ "$STATUS" = "200" ]; then
               echo "✅ Page is live: $PAGE_URL"
               exit 0
             fi
-            echo "⏳ Attempt $i/10 — Page not live yet (HTTP $STATUS)"
+            echo "⏳ Attempt $i/30 — Page not live yet (HTTP $STATUS)"
             sleep 10
           done
 
