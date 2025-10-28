@@ -94,10 +94,9 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: .
-          keep_files: false
+          publish_dir: root-page
           force_orphan: true
-          commit_message: "Deploy Playwright Report (${STATUS})"
+          commit_message: "Deploy Playwright Report 🚀"
 
       # === 5️⃣ Удаляем старые workflow-артефакты (оставляем последние 5) ===
       - name: 🧹 Clean up old workflow artifacts
