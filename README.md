@@ -20,8 +20,8 @@ _(Playwright + GitHub Actions)_
 🔗 **Результаты последних запусков:**  
 👉 [Run Playwright Tests — GitHub Actions](https://github.com/ja777mail/ui_w_pw/actions/workflows/ci_playwright.yml)
 
-🌐 **Демонстрация интерфейса:**  
-👉 [ui_w_pw (GitHub Pages)](https://ja777mail.github.io/ui_w_pw/)
+🌐 **Демонстрация отчета:**  
+👉 [Report (GitHub Pages)](https://ja777mail.github.io/ui_w_pw/)
 
 ---
 
@@ -39,8 +39,8 @@ Portfolio project demonstrating tester’s practical skills in:
 🔗 **Latest test results:**  
 👉 [Run Playwright Tests — GitHub Actions](https://github.com/ja777mail/ui_w_pw/actions/workflows/ci_playwright.yml)
 
-🌐 **Live Demo:**  
-👉 [ui_w_pw (GitHub Pages)](https://ja777mail.github.io/ui_w_pw/)
+🌐 **Report Demo:**  
+👉 [Report(GitHub Pages)](https://ja777mail.github.io/ui_w_pw/)
 
 ---
 
