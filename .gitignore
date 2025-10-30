@@ -29,5 +29,5 @@ node_modules/
 .DS_Store
 
 # others
-.github/
 keys.txt
+*copy*
