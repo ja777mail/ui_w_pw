@@ -40,7 +40,7 @@ Portfolio project demonstrating tester’s practical skills in:
 👉 [Run Playwright Tests — GitHub Actions](https://github.com/ja777mail/ui_w_pw/actions/workflows/ci_playwright.yml)
 
 🌐 **Report Demo:**  
-👉 [Report(GitHub Pages)](https://ja777mail.github.io/ui_w_pw/)
+👉 [Report (GitHub Pages)](https://ja777mail.github.io/ui_w_pw/)
 
 ---
 
