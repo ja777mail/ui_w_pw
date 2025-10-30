@@ -1,4 +1,4 @@
-# 🎭 UI Testing Automation Demo
+# 🎭 Web UI Testing Automation Demo
 
 _(Playwright + GitHub Actions)_
 
