@@ -2,7 +2,7 @@
 
 _(Playwright + GitHub Actions)_
 
-[![Playwright Tests](https://github.com/ja777mail/ui_w_pw/actions/workflows/playwright.yml/badge.svg)](https://github.com/ja777mail/ui_w_pw/actions/workflows/playwright.yml)
+[![Playwright Tests](https://github.com/ja777mail/ui_w_pw/actions/workflows/ci_playwright.yml/badge.svg)](https://github.com/ja777mail/ui_w_pw/actions/workflows/ci_playwright.yml)
 
 ---
 
@@ -18,7 +18,7 @@ _(Playwright + GitHub Actions)_
 
 📂 Репозиторий показывает реальные сценарии выполнения UI-тестов при каждом `push`.  
 🔗 **Результаты последних запусков:**  
-👉 [Run Playwright Tests — GitHub Actions](https://github.com/ja777mail/ui_w_pw/actions/workflows/playwright.yml)
+👉 [Run Playwright Tests — GitHub Actions](https://github.com/ja777mail/ui_w_pw/actions/workflows/ci_playwright.yml)
 
 🌐 **Демонстрация интерфейса:**  
 👉 [ui_w_pw (GitHub Pages)](https://ja777mail.github.io/ui_w_pw/)
@@ -37,7 +37,7 @@ Portfolio project demonstrating tester’s practical skills in:
 
 📂 Repository runs real browser-based automated tests on every commit.  
 🔗 **Latest test results:**  
-👉 [Run Playwright Tests — GitHub Actions](https://github.com/ja777mail/ui_w_pw/actions/workflows/playwright.yml)
+👉 [Run Playwright Tests — GitHub Actions](https://github.com/ja777mail/ui_w_pw/actions/workflows/ci_playwright.yml)
 
 🌐 **Live Demo:**  
 👉 [ui_w_pw (GitHub Pages)](https://ja777mail.github.io/ui_w_pw/)
